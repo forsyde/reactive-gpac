@@ -4,56 +4,77 @@ module ForSyDe.Reactive.Synchronous where
 
 --import Control.Monad.State.Lazy
 
-data MapSY f = MapSY f
+data Process a b s = Moore (s -> a -> s) (s -> b) s
 
-newtype Process a b s = Process {runProcess :: a -> (b, s)}
 
-data Machine state event signal = Machine
-  { mCurState :: state,
-    mTransFunction :: state -> event -> (state, signal)}
 
--- newtype State (Machine state event signal) signal =
---   State {runState :: (Machine state event signal) -> (signal, (Machine state event signal))}
 
-stepMachine :: event
-            -> Machine state event signal
-            -> (signal, Machine state event signal)
-stepMachine event machine = (output, machine {mCurState = newState})
-  where curState = mCurState machine
-        (newState, output) = mTransFunction machine curState event
 
-createMachine :: state
-              -> (state -> event -> (state, signal))
-              -> Machine state event signal
-createMachine = Machine
 
-iterateSSY :: Machine state event signal -> [event] -> [signal]
-iterateSSY _ [] = []
-iterateSSY m (x:xs) = y:(iterateSSY newM xs)
-  where (y, newM) = stepMachine x m
 
-cascadeSSY :: Machine s0 a b
-           -> Machine s1 b c
-           -> a
-           -> c
-cascadeSSY m1 m2 e = y
-  where s0 = fst $ stepMachine e m1
-        y = fst $ stepMachine s0 m2
 
--- (>>>) :: Machine state event signal
---       -> (state -> Machine state event signal)
---       -> Machine state event signal
--- m1 >>> f = let (a, newM1) = mTransFunction m1
---                g = f a
---            in g newM1
 
-mapSSY f = createMachine 0 (\_ x -> (f x, f x))
 
-delaySSY s0 = createMachine s0 (\s e -> (e, s))
 
-mooreSSY nsf dec s0 = createMachine s0 (\s e -> (nsf s, dec s e))
 
-mealySSY nsf dec s0 = createMachine s0 (\s e -> (nsf s e, dec s e))
+
+
+
+
+
+
+
+
+-- data MapSY f = MapSY f
+
+-- newtype Process a b s = Process {runProcess :: a -> (b, s)}
+
+-- data Machine state event signal = Machine
+--   { mCurState :: state,
+--     mTransFunction :: state -> event -> (state, signal)}
+
+-- -- newtype State (Machine state event signal) signal =
+-- --   State {runState :: (Machine state event signal) -> (signal, (Machine state event signal))}
+
+-- stepMachine :: event
+--             -> Machine state event signal
+--             -> (signal, Machine state event signal)
+-- stepMachine event machine = (output, machine {mCurState = newState})
+--   where curState = mCurState machine
+--         (newState, output) = mTransFunction machine curState event
+
+-- createMachine :: state
+--               -> (state -> event -> (state, signal))
+--               -> Machine state event signal
+-- createMachine = Machine
+
+-- iterateSSY :: Machine state event signal -> [event] -> [signal]
+-- iterateSSY _ [] = []
+-- iterateSSY m (x:xs) = y:(iterateSSY newM xs)
+--   where (y, newM) = stepMachine x m
+
+-- cascadeSSY :: Machine s0 a b
+--            -> Machine s1 b c
+--            -> a
+--            -> c
+-- cascadeSSY m1 m2 e = y
+--   where s0 = fst $ stepMachine e m1
+--         y = fst $ stepMachine s0 m2
+
+-- -- (>>>) :: Machine state event signal
+-- --       -> (state -> Machine state event signal)
+-- --       -> Machine state event signal
+-- -- m1 >>> f = let (a, newM1) = mTransFunction m1
+-- --                g = f a
+-- --            in g newM1
+
+-- mapSSY f = createMachine 0 (\_ x -> (f x, f x))
+
+-- delaySSY s0 = createMachine s0 (\s e -> (e, s))
+
+-- mooreSSY nsf dec s0 = createMachine s0 (\s e -> (nsf s, dec s e))
+
+-- mealySSY nsf dec s0 = createMachine s0 (\s e -> (nsf s e, dec s e))
 
 
 
