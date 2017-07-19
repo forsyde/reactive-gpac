@@ -85,6 +85,30 @@ secondSM (SM (SF sf) s) = SM (SF (fsf sf)) s
         -- Evaluate process.
         (b, SM (SF sfn) sn) = f s a
 
-splitSM :: _
+splitSM :: SM a b s1
+        -> SM c d s2
+        -> SM (a,c) (b,d) (s1,s2)
+splitSM (SM (SF f1) s1) (SM (SF f2) s2) = SM (SF (fsf f1 f2)) (s1,s2)
+  where
+    fsf fa fc (sa, sc) (a,c) = ((b,d), SM (SF (fsf f1n f2n)) (s1n, s2n))
+      where
+        -- Evaluate first process.
+        (b, SM (SF f1n) s1n) = fa sa a
+        -- Evaluate second process.
+        (d, SM (SF f2n) s2n) = fc sc c
 
-fanoutSM :: _
+(****) = splitSM
+
+fanoutSM :: SM a b s1
+         -> SM a c s2
+         -> SM a (b,c) (s1,s2)
+fanoutSM (SM (SF f1) s1) (SM (SF f2) s2) = SM (SF (fsf f1 f2)) (s1,s2)
+  where
+    fsf fa fb (sa, sb) a = ((b,d), SM (SF (fsf f1n f2n)) (s1n, s2n))
+      where
+        -- Evaluate first process
+        (b, SM (SF f1n) s1n) = fa sa a
+        -- Evaluate second process
+        (d, SM (SF f2n) s2n) = fb sb a
+
+(&&&&) = fanoutSM
