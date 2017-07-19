@@ -14,4 +14,5 @@
 
 module ForSyDe.Reactive () where
 
-import ForSyDe.Reactive.Synchronous
+import ForSyDe.Reactive.CoreTypeSY
+import ForSyDe.Reactive.CoreSY

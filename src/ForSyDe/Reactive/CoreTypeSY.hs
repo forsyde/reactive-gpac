@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleContexts, ExistentialQuantification #-}
 
-module ForSyDe.Reactive.Synchronous where
+module ForSyDe.Reactive.CoreTypeSY where
 
 -- | The basic process is the mealy machine and all other process
 -- constructors are derived from it. In this way, I can consider only
