@@ -16,6 +16,10 @@ data SM a b s = SM (SF a b s) s
 -- a new process to be used next.
 newtype SF a b s = SF (s -> a -> (b, SM a b s))
 
+-- | 'CM' representes a state machine with unacessable internal state
+-- or a combinational process.
+type CB a b = SM a b ()
+
 
 -- | API: we define two utility functions. 'state' returns the internal state of a 'SM' and 'sFunction' returns the @state function@.
 
