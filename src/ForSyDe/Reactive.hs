@@ -12,7 +12,9 @@
 --
 -----------------------------------------------------------------------------
 
-module ForSyDe.Reactive () where
+module ForSyDe.Reactive ( module ForSyDe.Reactive.CoreTypeSY,
+                          module ForSyDe.Reactive.CoreSY
+                        ) where
 
 import ForSyDe.Reactive.CoreTypeSY
 import ForSyDe.Reactive.CoreSY
