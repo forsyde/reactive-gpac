@@ -1,240 +1,70 @@
-{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE FlexibleContexts, ExistentialQuantification #-}
 
 module ForSyDe.Reactive.Synchronous where
 
-import Control.Monad.State.Lazy
-
-data Process a b s = Moore (s -> a -> s) (s -> b) s
-                   | Mealy (s -> a -> s) (s -> a -> b) s
-                   | Map (a -> b)
---                   | Delay s
-
-type StateM a b s = (Process a b s) -> (b, Process a b s)
-
--- Process execution
-runProcess :: a
---           -> Process a b s
---           -> (b, Process a b s)
-             -> StateM a b s
-runProcess x (Moore nsf dec state) =
-  (dec state, Moore nsf dec (nsf state x))
-runProcess x (Mealy nsf dec state) =
-  (dec state x, Mealy nsf dec (nsf state x))
-runProcess x (Map f) = (f x, Map f)
-
---composeP :: Process a b s1 -> Process b c s2 -> Process a c s3
---composeP (Map f) (Moore nsf dec state) = Moore () dec state
-
--- Process constructors
-mooreSY nsf dec s0 = Moore nsf dec s0
-mealySY nsf dec s0 = Mealy nsf dec s0
-delaySY s0 = Moore (\s a -> a) (\s -> s) s0
-mapSY f = Map f
-
-
--- Some processes
-runningSum :: Process Double Double Double
-runningSum = mooreSY (\s a -> s + a) (\s -> s) 0
-
-
-
-
-
-
-
-
-
-
-
-
-
-
--- data MapSY f = MapSY f
-
--- newtype Process a b s = Process {runProcess :: a -> (b, s)}
-
--- data Machine state event signal = Machine
---   { mCurState :: state,
---     mTransFunction :: state -> event -> (state, signal)}
-
--- -- newtype State (Machine state event signal) signal =
--- --   State {runState :: (Machine state event signal) -> (signal, (Machine state event signal))}
-
--- stepMachine :: event
---             -> Machine state event signal
---             -> (signal, Machine state event signal)
--- stepMachine event machine = (output, machine {mCurState = newState})
---   where curState = mCurState machine
---         (newState, output) = mTransFunction machine curState event
-
--- createMachine :: state
---               -> (state -> event -> (state, signal))
---               -> Machine state event signal
--- createMachine = Machine
-
--- iterateSSY :: Machine state event signal -> [event] -> [signal]
--- iterateSSY _ [] = []
--- iterateSSY m (x:xs) = y:(iterateSSY newM xs)
---   where (y, newM) = stepMachine x m
-
--- cascadeSSY :: Machine s0 a b
---            -> Machine s1 b c
---            -> a
---            -> c
--- cascadeSSY m1 m2 e = y
---   where s0 = fst $ stepMachine e m1
---         y = fst $ stepMachine s0 m2
-
--- -- (>>>) :: Machine state event signal
--- --       -> (state -> Machine state event signal)
--- --       -> Machine state event signal
--- -- m1 >>> f = let (a, newM1) = mTransFunction m1
--- --                g = f a
--- --            in g newM1
-
--- mapSSY f = createMachine 0 (\_ x -> (f x, f x))
-
--- delaySSY s0 = createMachine s0 (\s e -> (e, s))
-
--- mooreSSY nsf dec s0 = createMachine s0 (\s e -> (nsf s, dec s e))
-
--- mealySSY nsf dec s0 = createMachine s0 (\s e -> (nsf s e, dec s e))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
---data Process a b = Event a -> State s b
-
--- mapSY :: a -> State (a -> b) b
--- mapSY x = state $ \f -> (f x, f)
-
--- --delaySY :: a -> State a a
--- delaySY s0 = state $ \x -> (x, s0)
-
-
--- mooreSY :: (s -> a -> s)        -- ^ Next state function
---         -> (s -> b)             -- ^ Output decoder
---         -> a                    -- ^ Input token
---         -> State s b            -- ^ Output
--- mooreSY nsf dec x = state $ \s -> (dec s, nsf s x)
-
--- mealySY :: (s -> a -> s)        -- ^ Next state function
---         -> (s -> a -> b)        -- ^ Output decoder
---         -> a                    -- ^ Input token
---         -> State s b            -- ^ Output
--- mealySY nsf dec x = state $ \s -> (dec s x, nsf s x)
-
--- --p1 :: State Int Int
--- p1 x = mooreSY (\s x -> s+x) (id)
-
--- p2 = mapSY
-
--- --p3 = delaySY
-
--- --p4 = \x -> (delaySY x) >>= delaySY
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
--- data ProcessConstructorSY s a = MapSY (a -> s)
--- --                     | ZipWithSY (a -> b -> c)
---                      | DelaySY s
---                      | MooreSY (s -> a -> s) (s -> s) s
---                      | MealySY (s -> a -> s) (s -> a -> s) s
-
--- data Function = Function
--- data Value = Value
--- data State = State
-
--- data EventSY a = EventSY a deriving (Show)
-
--- evalP :: ProcessConstructorSY b a -> EventSY a -> EventSY b
--- evalP (MapSY f) (EventSY v) = EventSY $ f v
--- --evalP (ZipWithSY f) (EventSY (v1, v2)) = EventSY $ f v1 v2
--- evalP (DelaySY s) (EventSY v) = EventSY s
--- evalP (MooreSY nsf dec s) (EventSY v) = EventSY $ dec s
--- evalP (MealySY nsf dec s) (EventSY v) = EventSY $ dec s v
-
--- execP :: EventSY a -> ProcessConstructorSY a a -> (EventSY a, ProcessConstructorSY a a)
--- execP (EventSY v) (MapSY f) = (EventSY $ f v, MapSY f)
--- --execP (EventSY v) (ZipWithSY f) = (EventSY $ f v, ZipWithSY f)
--- execP (EventSY v) (DelaySY s) = (EventSY s, DelaySY v)
--- execP (EventSY v) (MooreSY nsf dec s)
---   = (EventSY $ dec s, MooreSY nsf dec (nsf s v))
--- execP (EventSY v) (MealySY nsf dec s)
---   = (EventSY $ dec s v, MealySY nsf dec (nsf s v))
-
-
--- return :: EventSY a -> ProcessConstructorSY s a -> (EventSY a, ProcessConstructorSY s a)
--- return e = \p -> (e, p)
-
---ss >>= g = \p -> let (a, newState) = execP ss
-
---data Process s a
---  = ProcessSY {runP :: (ProcessConstructorSY s a)
---                -> (EventSY a, ProcessConstructorSY s a)}
-
-
-
---data EventSY a = EventSY a
---type ProcessConstructorSY a b = EventSY a -> EventSY b
---type StateSY a b = (EventSY b, ProcessConstructorSY a b)
-
---mapSY :: (a -> b) -> EventSY a -> StateSY a b
---mapSY f (EventSY value) = (EventSY (f value), mapSY f)
-
-
---zipWithSY :: (a -> b -> c) -> Signal a -> Signal b -> Signal c
-
---delaySY :: a -> Signal a -> Signal a
-
---mooreSY :: (a -> b -> a) -- ^ Combinational function for next state decoder.
---        -> (a -> c)      -- ^ Combinational function for output decoder.
---        -> a             -- ^ Initial state
---        -> Signal b      -- ^ Input signal
---        -> Signal c      -- ^ Output signal
-
---mealySY :: (a -> b -> a) -- ^ Combinational function for next state decoder.
---        -> (a -> b -> c)      -- ^ Combinational function for output decoder.
---        -> a             -- ^ Initial state
---        -> Signal b      -- ^ Input signal
---        -> Signal c      -- ^ Output signal
+-- | The basic process is the mealy machine and all other process
+-- constructors are derived from it. In this way, I can consider only
+-- one case for processes composition.
+
+-- | 'SM' represents a state machine with input of type @a@, output of
+-- type @b@ and an internal state of type @s@. 'SF' represents a @state function@ that merges the @next state function@ and the @output decoder@ for a mealy machine.
+data SM a b s = SM (SF a b s) s
+
+-- | 'SF' represents a @state function@. It takes the inputs and the
+-- internal state to generate a new state and the outputs. This is
+-- inspiered on the idea of having a process to generate an output and
+-- a new process to be used next.
+newtype SF a b s = SF (s -> a -> (b, SM a b s))
+
+
+-- | API: we define two utility functions. 'state' returns the internal state of a 'SM' and 'sFunction' returns the @state function@.
+
+-- | 'state' reads the internal state of a 'SM'.
+state :: SM a b s -> s
+state (SM _ s) = s
+
+-- | 'sFunction' returns the state function of a 'SM'.
+sFunction :: SM a b s -> (s -> a -> (b, SM a b s))
+sFunction (SM (SF sf) _) = sf
+
+
+-- | Process constructors: we define the usual ForSyDe process
+-- constructors. These are immutable processes in the sense once they are created, their functionality does not change.
+
+-- | 'mealySY' builds a mealy machine process.
+mealySY :: (s -> a -> s)        -- ^ Next state decoder.
+        -> (s -> a -> b)        -- ^ Output decoder.
+        -> s                    -- ^ Initial state.
+        -> SM a b s             -- ^ Mealy state machine process.
+mealySY nsf dec s0 = SM (st) s0
+  where st = SF (\s a -> (dec s a, SM (st) (nsf s a)))
+
+-- | 'mooreSY' builds a moore machine process.
+mooreSY :: (s -> a -> s)        -- ^ Next state decoder.
+        -> (s -> b)             -- ^ Output decoder.
+        -> s                    -- ^ Initial state.
+        -> SM a b s             -- ^ Moore state machine process.
+mooreSY nsf dec s0 = SM (st) s0
+  where st = SF (\s a -> (dec s, SM (st) (nsf s a)))
+
+-- | 'delaySY' delays the input by one event cycle by introducing an
+-- initial value at the beginning of the output signal.
+delaySY :: s                    -- ^ Initial state.
+        -> SM s s s             -- ^ Delay process.
+delaySY s0 = SM (sf) s0
+  where sf = SF (\s a -> (s, SM (sf) a))
+
+-- | 'mapSY' builds a combinational process.
+mapSY :: (a -> b)               -- ^ Combinational function.
+      -> SM a b ()              -- ^ Combinational process.
+mapSY f = SM (sf) ()
+  where sf = SF (\s a -> (f a, SM (sf) ()))
+
+
+-- | Mutable (reconfigurable) processes?
+
+-- | Class instances
+-- | 'Show' instance: we decide to show only the internal state of the
+-- machine.
+instance (Show s) => Show (SM a b s) where
+  show (SM sf s) = show s
