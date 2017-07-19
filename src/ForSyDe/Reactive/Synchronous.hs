@@ -2,15 +2,39 @@
 
 module ForSyDe.Reactive.Synchronous where
 
---import Control.Monad.State.Lazy
+import Control.Monad.State.Lazy
 
 data Process a b s = Moore (s -> a -> s) (s -> b) s
+                   | Mealy (s -> a -> s) (s -> a -> b) s
+                   | Map (a -> b)
+--                   | Delay s
+
+type StateM a b s = (Process a b s) -> (b, Process a b s)
+
+-- Process execution
+runProcess :: a
+--           -> Process a b s
+--           -> (b, Process a b s)
+             -> StateM a b s
+runProcess x (Moore nsf dec state) =
+  (dec state, Moore nsf dec (nsf state x))
+runProcess x (Mealy nsf dec state) =
+  (dec state x, Mealy nsf dec (nsf state x))
+runProcess x (Map f) = (f x, Map f)
+
+--composeP :: Process a b s1 -> Process b c s2 -> Process a c s3
+--composeP (Map f) (Moore nsf dec state) = Moore () dec state
+
+-- Process constructors
+mooreSY nsf dec s0 = Moore nsf dec s0
+mealySY nsf dec s0 = Mealy nsf dec s0
+delaySY s0 = Moore (\s a -> a) (\s -> s) s0
+mapSY f = Map f
 
 
-
-
-
-
+-- Some processes
+runningSum :: Process Double Double Double
+runningSum = mooreSY (\s a -> s + a) (\s -> s) 0
 
 
 
