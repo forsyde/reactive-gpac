@@ -37,3 +37,54 @@ sFunction (SM (SF sf) _) = sf
 -- machine.
 instance (Show s) => Show (SM a b s) where
   show (SM sf s) = show s
+
+
+-- | Composition operators based on the arrow operators.
+
+-- | 'cascadeSM' is the analog of (.) for state machines. We keep
+-- track of the internal states.
+cascadeSM :: SM b c s2
+          -> SM a b s1
+          -> SM a c (s1, s2)
+cascadeSM (SM (SF f2) s2) (SM (SF f1) s1) = SM (SF (csf f1 f2)) (s1, s2)
+  where
+    csf fa fb (sa, sb) a = (c, SM (SF (csf f1n f2n)) (s1n, s2n))
+      where
+        -- Evaluate first machine with the composition input.
+        (b, SM (SF f1n) s1n) = fa sa a
+        -- Evaluate second machine with the first output.
+        (c, SM (SF f2n) s2n) = fb sb b
+
+-- | Composition operators.
+(>>>>) :: SM a b s1
+       -> SM b c s2
+       -> SM a c (s1, s2)
+p1 >>>> p2 = cascadeSM p2 p1
+
+(<<<<) :: SM b c s2
+       -> SM a b s1
+       -> SM a c (s1, s2)
+(<<<<) = cascadeSM
+
+-- | Parallel composition.
+firstSM :: SM a b s
+        -> SM (a, c) (b, c) s
+firstSM (SM (SF sf) s) = SM (SF (fsf sf)) s
+  where
+    fsf f s (a, c) = ((b,c), SM (SF (fsf sfn)) sn)
+      where
+        -- Evaluate process.
+        (b, SM (SF sfn) sn) = f s a
+
+secondSM :: SM a b s
+         -> SM (c, a) (c, b) s
+secondSM (SM (SF sf) s) = SM (SF (fsf sf)) s
+  where
+    fsf f s (c, a) = ((c,b), SM (SF (fsf sfn)) sn)
+      where
+        -- Evaluate process.
+        (b, SM (SF sfn) sn) = f s a
+
+splitSM :: _
+
+fanoutSM :: _
