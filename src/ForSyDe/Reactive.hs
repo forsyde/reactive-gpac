@@ -13,8 +13,12 @@
 -----------------------------------------------------------------------------
 
 module ForSyDe.Reactive ( module ForSyDe.Reactive.CoreTypeSY,
-                          module ForSyDe.Reactive.CoreSY
+                          module ForSyDe.Reactive.CoreSY,
+                          module ForSyDe.Reactive.CoreTypeCT,
+                          module ForSyDe.Reactive.CoreCT
                         ) where
 
 import ForSyDe.Reactive.CoreTypeSY
 import ForSyDe.Reactive.CoreSY
+import ForSyDe.Reactive.CoreTypeCT
+import ForSyDe.Reactive.CoreCT

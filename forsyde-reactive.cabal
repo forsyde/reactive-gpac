@@ -18,7 +18,9 @@ cabal-version:       >=1.10
 library
   exposed-modules:     ForSyDe.Reactive,
                        ForSyDe.Reactive.CoreTypeSY,
-                       ForSyDe.Reactive.CoreSY
+                       ForSyDe.Reactive.CoreSY,
+                       ForSyDe.Reactive.CoreTypeCT,
+                       ForSyDe.Reactive.CoreCT
   -- other-modules:
   other-extensions:    FlexibleContexts, ExistentialQuantification
   build-depends:       base >=4.9 && <4.10, mtl >=2.2 && <2.3
