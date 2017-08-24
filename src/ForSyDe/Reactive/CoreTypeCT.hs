@@ -25,5 +25,7 @@ data ProcessCT a b = ProcessCT (SignalCT a -> SignalCT b)
 at :: SignalCT a -> Time -> a
 (SignalCT f) `at` t = fst $ f t
 
+next :: SignalCT a -> Time -> SignalCT a
+next (SignalCT f) t = snd $ f t
 
 -- | Composition operators.
