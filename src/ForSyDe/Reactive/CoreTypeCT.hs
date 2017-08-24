@@ -13,19 +13,37 @@ type Time = Double
 -- newtype Value = Double
 
 -- | Signals are functions over Time.
-data SignalCT a = SignalCT (Time -> (a, SignalCT a))
+--data SignalCT a = SignalCT (Time -> (a, SignalCT a))
+type SignalCT a = PCT () a
 
 -- | Processes are functions over signals.
-data ProcessCT a b = ProcessCT (SignalCT a -> SignalCT b)
+data PCT a b = PCT {prCT :: Time -> a -> ContCT a b}
+
+-- | The Continuation data type encapsulates the output of the process
+-- and a new Process for later computations.
+type ContCT a b = (b, PCT a b)
 
 
 -- | API:
 
--- | 'at' observes a SignalCT at a specified time t.
-at :: SignalCT a -> Time -> a
-(SignalCT f) `at` t = fst $ f t
+-- | 'at' observes a PCT at a specified time t.
+at :: PCT () a -> Time -> a
+p `at` t = fst $ prCT p t ()
 
-next :: SignalCT a -> Time -> SignalCT a
-next (SignalCT f) t = snd $ f t
+--next :: SignalCT a -> Time -> SignalCT a
+--next (SignalCT f) t = snd $ f t
 
 -- | Composition operators.
+liftCT :: (a -> b) -> PCT a b
+liftCT f = PCT {prCT = \_ a -> (f a, liftCT f)}
+
+cascadeCT :: PCT a b
+          -> PCT b c
+          -> PCT a c
+cascadeCT (PCT {prCT = p1}) (PCT {prCT = p2}) =
+  PCT {prCT = p}
+  where
+    p t a = (c, p1' `cascadeCT` p2')
+      where
+        (b, p1') = p1 t a
+        (c, p2') = p2 t b
