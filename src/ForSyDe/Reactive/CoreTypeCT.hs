@@ -87,6 +87,7 @@ splitCT (PCT {prCT = p1}) (PCT {prCT = p2}) =
         (b, p1') = p1 t a
         (d, p2') = p2 t c
 
+-- | Split input in two outputs
 feedCT :: PCT a b
        -> PCT a (b,b)
 feedCT (PCT {prCT = p1}) = PCT {prCT = p}
@@ -94,3 +95,13 @@ feedCT (PCT {prCT = p1}) = PCT {prCT = p}
     p t a = ((b,b), feedCT p1')
       where
         (b, p1') = p1 t a
+
+fanoutCT :: PCT a b
+         -> PCT a c
+         -> PCT a (b,c)
+fanoutCT (PCT {prCT = p1}) (PCT {prCT = p2}) = PCT {prCT = p}
+  where
+    p t a = ((b,c), fanoutCT p1' p2')
+      where
+        (b, p1') = p1 t a
+        (c, p2') = p2 t a
