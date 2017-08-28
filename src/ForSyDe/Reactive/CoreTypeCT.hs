@@ -14,7 +14,6 @@ type Time = Double
 
 -- | Signals are functions over Time.
 --data SignalCT a = SignalCT (Time -> (a, SignalCT a))
-type SignalCT a = PCT () a
 
 -- | Processes are functions over signals.
 data PCT a b = PCT {prCT :: Time -> a -> ContCT a b}
@@ -23,6 +22,8 @@ data PCT a b = PCT {prCT :: Time -> a -> ContCT a b}
 -- and a new Process for later computations.
 type ContCT a b = (b, PCT a b)
 
+-- | Sources have no input.
+type SourceCT a = PCT () a
 
 -- | API:
 
@@ -47,3 +48,49 @@ cascadeCT (PCT {prCT = p1}) (PCT {prCT = p2}) =
       where
         (b, p1') = p1 t a
         (c, p2') = p2 t b
+
+(>>>*) :: PCT a b
+       -> PCT b c
+       -> PCT a c
+(>>>*) = cascadeCT
+
+(<<<*) :: PCT b c
+       -> PCT a b
+       -> PCT a c
+p1 <<<* p2 = cascadeCT p2 p1
+
+firstCT :: PCT a b
+        -> PCT (a, c) (b, c)
+firstCT (PCT {prCT = p1}) = PCT {prCT = p}
+  where
+    p t (a,c) = ((b,c), firstCT p')
+      where
+        (b, p') = p1 t a
+
+secondCT :: PCT a b
+         -> PCT (c, a) (c, b)
+secondCT (PCT {prCT = p1}) = PCT {prCT = p}
+  where
+    p t (c,a) = ((c,b), secondCT p')
+      where
+        (b, p') = p1 t a
+
+-- | Parallel composition
+splitCT :: PCT a b
+        -> PCT c d
+        -> PCT (a,c) (b,d)
+splitCT (PCT {prCT = p1}) (PCT {prCT = p2}) =
+  PCT {prCT = p}
+  where
+    p t (a,c) = ((b,d), splitCT p1' p2')
+      where
+        (b, p1') = p1 t a
+        (d, p2') = p2 t c
+
+feedCT :: PCT a b
+       -> PCT a (b,b)
+feedCT (PCT {prCT = p1}) = PCT {prCT = p}
+  where
+    p t a = ((b,b), feedCT p1')
+      where
+        (b, p1') = p1 t a
