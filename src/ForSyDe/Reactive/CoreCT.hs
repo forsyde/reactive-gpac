@@ -14,10 +14,25 @@ time = PCT (\t () -> (t, time))
 constCT :: a -> PCT () a
 constCT k = PCT (\_ () -> (k, constCT k))
 
+-- | Null function. Ugly but I still could not think of how to avoid this...
+nullCT :: PCT () ()
+nullCT = PCT (\t _ -> ((), nullCT))
+
 -- | Adder
---adderCT :: (Num a) => PCT a b -> PCT c b -> PCT a c
---adderCT s1 s2 = SignalCT (\t -> ((s1 `at` t) + (s2 `at` t), adderCT s1 s2))
---adderCT p1 p2 = PCT {}
+adderCT :: (Num b) => PCT a (b, b) -> PCT a b
+adderCT (PCT {prCT = p1}) = PCT {prCT = p}
+  where
+    p t a = (uncurry (+) c, adderCT p1')
+      where
+        (c, p1') = p1 t a
+
+-- | Multiplier
+multCT :: (Num b) => PCT a (b, b) -> PCT a b
+multCT (PCT {prCT = p1}) = PCT {prCT = p}
+  where
+    p t a = (uncurry (*) c, adderCT p1')
+      where
+        (c, p1') = p1 t a
 
 
 -- | Multiplier
