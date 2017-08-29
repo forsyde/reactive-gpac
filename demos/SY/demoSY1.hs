@@ -1,4 +1,4 @@
-module Demo01 where
+module DemoSY1 where
 
 import ForSyDe.Reactive
 
