@@ -35,12 +35,23 @@ multCT (PCT {prCT = p1}) = PCT {prCT = p}
         (c, p1') = p1 t a
 
 
--- | Multiplier
---multCT :: (Num a) => SignalCT a -> SignalCT a -> SignalCT a
---multCT s1 s2 = SignalCT (\t -> ((s1 `at` t) * (s2 `at` t), multCT s1 s2))
-
 -- | Integrator
--- ???
+-- | Embedded the trapezoidal rule. Need to find a way to generalize
+-- the solver later...
+-- | Time in type signature is making me nuts...
+--intCT :: (Num a, Num b)
+--      => Time                      -- ^ Initial integration time
+--      -> b                      -- ^ Initial value
+--      -> PCT a b
+--      -> PCT a b
+intCT t0 y0 (PCT {prCT = p1}) = PCT {prCT = p}
+  where
+    p t a = (b, intCT t b p')
+      where
+        b = y0 + (t - t0)/2 * (fa + fb)
+        (fa, _)  = p1 t0 a
+        (fb, p') = p1 t a
+        --p' = (intCT solve t b (PCT {prCT = p1}))
 
 -- | Solver: solver function for the integral. In the case of integral
 -- only, RK4 reduces to Simpson's rule.
@@ -61,12 +72,12 @@ multCT (PCT {prCT = p1}) = PCT {prCT = p}
 -- -- | Processes execution
 
 -- -- | stepCT
--- stepCT :: SignalCT a -> Time -> (a, SignalCT a)
--- stepCT s1 t = (s1 `at` t, next s1 t)
+stepCT :: PCT () b -> Time -> (b, PCT () b)
+stepCT p1 t = (p1 `at` t, nextCT p1 t)
 
 -- -- | execCT
--- execCT :: SignalCT a -> [Time] -> ([a], SignalCT a)
--- execCT s1 [] = ([], s1)
--- execCT s1 (t:ts) = (a:as, finalSig)
---   where (a, newS) = stepCT s1 t
---         (as, finalSig) = execCT newS ts
+execCT :: PCT () b -> [Time] -> ([b], PCT () b)
+execCT p1 [] = ([], p1)
+execCT p1 (t:ts) = (b:bs, finalP)
+  where (b, newP) = stepCT p1 t
+        (bs, finalP) = execCT newP ts

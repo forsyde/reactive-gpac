@@ -31,12 +31,13 @@ type SourceCT a = PCT () a
 at :: PCT () a -> Time -> a
 p `at` t = fst $ prCT p t ()
 
---next :: SignalCT a -> Time -> SignalCT a
---next (SignalCT f) t = snd $ f t
+nextCT :: PCT () b -> Time -> PCT () b
+nextCT p t = snd $ prCT p t ()
 
 -- | Composition operators.
 liftCT :: (a -> b) -> PCT a b
 liftCT f = PCT {prCT = \_ a -> (f a, liftCT f)}
+
 
 cascadeCT :: PCT a b
           -> PCT b c
