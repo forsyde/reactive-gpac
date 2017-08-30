@@ -7,12 +7,12 @@ import ForSyDe.Reactive.CoreTypeCT
 -- are created, their functionality does not change.
 
 -- | Time
-time :: PCT () Time
-time = PCT (\t () -> (t, time))
+time :: PCT a Time
+time = PCT (\t _ -> (t, time))
 
 -- | Constant function
-constCT :: a -> PCT () a
-constCT k = PCT (\_ () -> (k, constCT k))
+constCT :: b -> PCT a b
+constCT k = PCT (\_ _ -> (k, constCT k))
 
 -- | Null function. Ugly but I still could not think of how to avoid this...
 nullCT :: PCT () ()
@@ -48,7 +48,7 @@ intCT t0 y0 (PCT {prCT = p1}) = PCT {prCT = p}
   where
     p t a = (b, intCT t b p')
       where
-        b = y0 + (t - t0)/2 * (fa + fb)
+        b = y0 + (t - t0) * (fa + fb)/2
         (fa, _)  = p1 t0 a
         (fb, p') = p1 t a
         --p' = (intCT solve t b (PCT {prCT = p1}))
@@ -69,14 +69,13 @@ intCT t0 y0 (PCT {prCT = p1}) = PCT {prCT = p}
 --   in y0 + h/6 * (k1 + 4 * k2 + k3)
 
 
--- -- | Processes execution
-
+-- -- | Processes execution: they output streams of DE events (Time, Value).
 -- -- | stepCT
-stepCT :: PCT () b -> Time -> (b, PCT () b)
-stepCT p1 t = (p1 `at` t, nextCT p1 t)
+stepCT :: PCT () b -> Time -> ((Time,b), PCT () b)
+stepCT p1 t = ((t, p1 `at` t), nextCT p1 t)
 
 -- -- | execCT
-execCT :: PCT () b -> [Time] -> ([b], PCT () b)
+execCT :: PCT () b -> [Time] -> ([(Time,b)], PCT () b)
 execCT p1 [] = ([], p1)
 execCT p1 (t:ts) = (b:bs, finalP)
   where (b, newP) = stepCT p1 t

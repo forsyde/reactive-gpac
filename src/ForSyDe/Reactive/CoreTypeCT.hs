@@ -31,14 +31,21 @@ type SourceCT a = PCT () a
 at :: PCT () a -> Time -> a
 p `at` t = fst $ prCT p t ()
 
+-- | 'nextCT' skips one time step
 nextCT :: PCT () b -> Time -> PCT () b
 nextCT p t = snd $ prCT p t ()
 
--- | Composition operators.
+-- | 'signalCT' extracts a signal from a process.
+-- | IMPORTANT: you lose the continuation features and might mess with
+-- the dynamic behavior of integrators.
+signalCT :: PCT a b -> (Time -> a -> b)
+signalCT (PCT {prCT = p1}) = \t a -> fst $ p1 t a
+
+-- | Lifting functions to processes
 liftCT :: (a -> b) -> PCT a b
 liftCT f = PCT {prCT = \_ a -> (f a, liftCT f)}
 
-
+-- | Composition operators.
 cascadeCT :: PCT a b
           -> PCT b c
           -> PCT a c
