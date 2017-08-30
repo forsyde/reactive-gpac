@@ -53,7 +53,6 @@ intCT t0 y0 (PCT {prCT = p1}) = PCT {prCT = p}
         (fb, p') = p1 t a
         --p' = (intCT solve t b (PCT {prCT = p1}))
 
-
 -- | Solver: solver function for the integral. In the case of integral
 -- only, RK4 reduces to Simpson's rule.
 --type Value = Time

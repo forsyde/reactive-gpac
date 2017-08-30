@@ -34,8 +34,6 @@ p `at` t = fst $ prCT p t ()
 nextCT :: PCT () b -> Time -> PCT () b
 nextCT p t = snd $ prCT p t ()
 
-
-
 -- | Composition operators.
 liftCT :: (a -> b) -> PCT a b
 liftCT f = PCT {prCT = \_ a -> (f a, liftCT f)}
