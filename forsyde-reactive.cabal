@@ -20,7 +20,8 @@ library
                        ForSyDe.Reactive.CoreTypeSY,
                        ForSyDe.Reactive.CoreSY,
                        ForSyDe.Reactive.CoreTypeCT,
-                       ForSyDe.Reactive.CoreCT
+                       ForSyDe.Reactive.CoreCT,
+                       ForSyDe.Reactive.Utils
   -- other-modules:
   other-extensions:    FlexibleContexts, ExistentialQuantification
   build-depends:       base >=4.9 && <4.10, mtl >=2.2 && <2.3

@@ -82,16 +82,3 @@ rk4 t0 y0 p1 t a = (b, lastP)
     (k2, p1'')  = prCT p1' (t0 + h/2) a
     (k3, lastP) = prCT p1'' t a
     b = y0 + h/6 * (k1 + 4 * k2 + k3)
-
-
--- -- | Processes execution: they output streams of DE events (Time, Value).
--- -- | stepCT
-stepCT :: PCT () b -> Time -> ((Time,b), PCT () b)
-stepCT p1 t = ((t, p1 `at` t), nextCT p1 t)
-
--- -- | execCT
-execCT :: PCT () b -> [Time] -> ([(Time,b)], PCT () b)
-execCT p1 [] = ([], p1)
-execCT p1 (t:ts) = (b:bs, finalP)
-  where (b, newP) = stepCT p1 t
-        (bs, finalP) = execCT newP ts
