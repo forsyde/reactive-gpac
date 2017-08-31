@@ -19,13 +19,29 @@ p3 = intCT rk4 0 0 p2
 -- | Note that we have to feed it with time...
 p4 = time >>>* liftCT sin
 
--- | Time vector to sample the signals, these are `n` observation
--- times including start and stop.
-obsTime n start stop = t
-  where
-    t = map (\x -> (x/(n-1))*(stop - start) + start) [0..n-1]
+p5 = intCT rk4 0 (-1) p4
 
-s1 = fst $ execCT p1 $ obsTime 11 0 10
-s2 = fst $ execCT p2 $ obsTime 11 0 10
-s3 = fst $ execCT p3 $ obsTime 11 0 10
-s4 = fst $ execCT p4 $ obsTime 11 0 (2*pi)
+
+-- | Uniform sampling
+t1 = linspace 0 10 10
+
+s1 = fst $ execCT p1 t1
+s2 = fst $ execCT p2 t1
+s3 = fst $ execCT p3 t1
+
+
+-- | Uniform sampling
+t2 = linspace 0 (5*2*pi) 100
+s4 = fst $ execCT p4 t2
+s5 = fst $ execCT p5 t2
+
+-- | Chebyshev (nonuniform) sampling
+t3 = chebyspace 0 (5*2*pi) 100
+s4' = fst $ execCT p4 t3
+s5' = fst $ execCT p5 t3
+
+main = do
+  writeDump "demos/plot/unif_sin.dat" s4
+  writeDump "demos/plot/unif_int_sin.dat" s5
+  writeDump "demos/plot/cheby_sin.dat" s4'
+  writeDump "demos/plot/cheby_int_sin.dat" s5'
