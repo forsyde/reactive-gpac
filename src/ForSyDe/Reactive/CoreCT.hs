@@ -44,29 +44,44 @@ multCT (PCT {prCT = p1}) = PCT {prCT = p}
 --      -> b                      -- ^ Initial value
 --      -> PCT a b
 --      -> PCT a b
-intCT t0 y0 (PCT {prCT = p1}) = PCT {prCT = p}
+--intCT t0 y0 (PCT {prCT = p1}) = PCT {prCT = p}
+--  where
+--    p t a = (b, intCT t b p')
+--      where
+--        b = y0 + (t - t0) * (fa + fb)/2
+--        (fa, (PCT {prCT = p1'})) = p1 t0 a
+--        (fb, p')  = p1' t a
+
+intCT t0 y0 p1 = PCT {prCT = p}
   where
     p t a = (b, intCT t b p')
       where
-        b = y0 + (t - t0) * (fa + fb)/2
-        (fa, (PCT {prCT = p1'})) = p1 t0 a
-        (fb, p')  = p1' t a
-        --p' = (intCT solve t b (PCT {prCT = p1}))
+        (b, p') = trapezoidal t0 y0 p1 t a
 
--- | Solver: solver function for the integral. In the case of integral
--- only, RK4 reduces to Simpson's rule.
---type Value = Time
---rk4 :: Time                     -- ^ Initial time (t0)
---     -> Value                    -- ^ Initial vale (y0)
---     -> (Time -> Value)          -- ^ Integrand function
---     -> Time                     -- ^ Time of interest
---     -> Value                    -- ^ Integral value
--- rk4 t0 y0 f t =
---   let h = t - t0
---       k1 = f t0
---       k2 = f (t0 + h/2)
---       k3 = f t
---   in y0 + h/6 * (k1 + 4 * k2 + k3)
+intCT2 t0 y0 p1 = PCT {prCT = p}
+  where
+    p t a = (b, intCT2 t b p')
+      where
+        (b, p') = rk4 t0 y0 p1 t a
+
+
+-- | Solvers collection.
+
+-- | Trapezoidal rule
+trapezoidal t0 y0 p1 t a = (b, p1'')
+  where
+    b = y0 + (t - t0)/2 * (fa + fb)
+    (fa, p1') = prCT p1 t0 a
+    (fb, p1'') = prCT p1' t a
+
+-- | Runge-Kutta 4th order: reduces to Simpson's rule.
+rk4 t0 y0 p1 t a = (b, lastP)
+  where
+    h = t - t0
+    (k1, p1')   = prCT p1 t0 a
+    (k2, p1'')  = prCT p1' (t0 + h/2) a
+    (k3, lastP) = prCT p1'' t a
+    b = y0 + h/6 * (k1 + 4 * k2 + k3)
 
 
 -- -- | Processes execution: they output streams of DE events (Time, Value).
