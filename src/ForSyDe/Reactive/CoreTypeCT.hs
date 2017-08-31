@@ -116,3 +116,12 @@ fanoutCT (PCT {prCT = p1}) (PCT {prCT = p2}) = PCT {prCT = p}
       where
         (b, p1') = p1 t a
         (c, p2') = p2 t a
+
+-- | Feedback operator
+feedbackCT :: PCT (a,c) (b,c)
+           -> PCT a b
+feedbackCT p1 = PCT {prCT = p}
+  where
+    p t a = (b, feedbackCT p1')
+      where
+        ((b,c), p1') = prCT p1 t (a, c)
