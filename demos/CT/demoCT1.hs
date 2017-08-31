@@ -8,11 +8,11 @@ p1 = constCT 1
 
 -- | Integral of p1
 -- | Expected to be p2(t) = t
-p2 = intCT2 0 0 p1
+p2 = intCT rk4 0 0 p1
 
 -- | Integral of p2
 -- | Expected to be p3(t) = t^2
-p3 = intCT2 0 0 p2
+p3 = intCT rk4 0 0 p2
 
 -- | Sine function
 -- | p4(t) = sin(t)

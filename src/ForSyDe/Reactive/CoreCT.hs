@@ -52,17 +52,17 @@ multCT (PCT {prCT = p1}) = PCT {prCT = p}
 --        (fa, (PCT {prCT = p1'})) = p1 t0 a
 --        (fb, p')  = p1' t a
 
-intCT t0 y0 p1 = PCT {prCT = p}
+intCT solver t0 y0 p1 = PCT {prCT = p}
   where
-    p t a = (b, intCT t b p')
+    p t a = (b, intCT solver t b p')
       where
-        (b, p') = trapezoidal t0 y0 p1 t a
+        (b, p') = solver t0 y0 p1 t a
 
-intCT2 t0 y0 p1 = PCT {prCT = p}
-  where
-    p t a = (b, intCT2 t b p')
-      where
-        (b, p') = rk4 t0 y0 p1 t a
+--intCT2 t0 y0 p1 = PCT {prCT = p}
+--  where
+--    p t a = (b, intCT2 t b p')
+--      where
+--        (b, p') = rk4 t0 y0 p1 t a
 
 
 -- | Solvers collection.
