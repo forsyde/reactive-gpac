@@ -31,12 +31,12 @@ s3 = fst $ execCT p3 t1
 
 
 -- | Uniform sampling
-t2 = linspace 0 (5*2*pi) 100
+t2 = chebyspace 0 (5*2*pi) 50
 s4 = fst $ execCT p4 t2
 s5 = fst $ execCT p5 t2
 
 -- | Chebyshev (nonuniform) sampling
-t3 = chebyspace 0 (5*2*pi) 100
+t3 = chebyspace 0 (5*2*pi) 99
 s4' = fst $ execCT p4 t3
 s5' = fst $ execCT p5 t3
 

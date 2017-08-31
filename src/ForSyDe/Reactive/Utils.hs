@@ -36,9 +36,8 @@ linspace start stop n = map (scale) nodes
 -- | Creates a Chebyshev grid list
 chebyspace :: Double -> Double -> Int -> [Double]
 chebyspace start stop n = map (scale) nodes
-  where n_2 = fromIntegral $ n * 2
-        nodes = map (getNode . fromIntegral) [1..n]
-        getNode x = cos . (*pi) $ (/n_2) . ((-)1) . (*2) $ x
-        scale x = ((-1) * x + 1) / 2 * length + start
-        --scale x = x
-        length = stop - start
+  where --n_2 = fromIntegral $ n * 2
+        --nodes = map (getNode . fromIntegral) $ reverse [1..n]
+        --getNode x = cos $ pi/n_2 * (2*x-1)
+    nodes = reverse $ map cos $ linspace 0 pi n
+    scale x = 1/2*(start + stop) + 1/2*(stop - start) * x
