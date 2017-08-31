@@ -49,8 +49,8 @@ intCT t0 y0 (PCT {prCT = p1}) = PCT {prCT = p}
     p t a = (b, intCT t b p')
       where
         b = y0 + (t - t0) * (fa + fb)/2
-        (fa, _)  = p1 t0 a
-        (fb, p') = p1 t a
+        (fa, (PCT {prCT = p1'})) = p1 t0 a
+        (fb, p')  = p1' t a
         --p' = (intCT solve t b (PCT {prCT = p1}))
 
 -- | Solver: solver function for the integral. In the case of integral
