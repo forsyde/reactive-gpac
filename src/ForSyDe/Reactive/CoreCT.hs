@@ -19,20 +19,25 @@ nullCT :: PCT () ()
 nullCT = PCT (\t _ -> ((), nullCT))
 
 -- | Adder
-adderCT :: (Num b) => PCT a (b, b) -> PCT a b
-adderCT (PCT {prCT = p1}) = PCT {prCT = p}
-  where
-    p t a = (uncurry (+) c, adderCT p1')
-      where
-        (c, p1') = p1 t a
+--adderCT :: (Num b) => PCT a (b, b) -> PCT a b
+--adderCT (PCT {prCT = p1}) = PCT {prCT = p}
+--  where
+--    p t a = (uncurry (+) c, adderCT p1')
+--      where
+--        (c, p1') = p1 t a
+adderCT :: (Num a) => PCT (a,a) a
+adderCT = liftCT (uncurry (+))
+
 
 -- | Multiplier
-multCT :: (Num b) => PCT a (b, b) -> PCT a b
-multCT (PCT {prCT = p1}) = PCT {prCT = p}
-  where
-    p t a = (uncurry (*) c, adderCT p1')
-      where
-        (c, p1') = p1 t a
+--multCT :: (Num b) => PCT a (b, b) -> PCT a b
+--multCT (PCT {prCT = p1}) = PCT {prCT = p}
+--  where
+--    p t a = (uncurry (*) c, adderCT p1')
+--      where
+--        (c, p1') = p1 t a
+multCT :: (Num a) => PCT (a, a) a
+multCT = liftCT (uncurry (*))
 
 
 -- | Integrator
