@@ -87,3 +87,12 @@ rk4 t0 y0 p1 t a = (b, lastP)
     (k2, p1'')  = prCT p1' (t0 + h/2) a
     (k3, lastP) = prCT p1'' t a
     b = y0 + h/6 * (k1 + 4 * k2 + k3)
+
+rk4' t0 y0 p1 t a = (b, lastP)
+  where
+    h = t - t0
+    (k1, p1_1) = prCT p1 t0 y0
+    (k2, p1_2) = prCT p1_1 (t0 + h/2) (y0 + h/2*k1)
+    (k3, p1_3) = prCT p1_2 (t0 + h/2) (y0 + h/2*k2)
+    (k4, lastP) = prCT p1_3 (t0 + h) (y0 + h*k3)
+    b = y0 + h/6*(k1 + 2*k2 + 2*k3 + k4)
