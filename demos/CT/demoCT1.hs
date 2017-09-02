@@ -17,7 +17,7 @@ p3 = intCT rk4 0 0 p2
 -- | Sine function
 -- | p4(t) = sin(t)
 -- | Note that we have to feed it with time...
-p4 = time >>>* liftCT sin
+p4 = time >>> liftCT sin
 
 p5 = intCT rk4 0 (-1) p4
 
@@ -50,14 +50,14 @@ s5'' = fst $ execCT p5 t4
 
 
 -- | Testing "discrete" changes...
-pp1 = time >>>* liftCT change
+pp1 = time >>> liftCT change
   where change t
           | t <= (t2 !! 25) = 1.0
           | otherwise = (-1.0)
 
 pp2 = liftCT (uncurry (-))
 
-pp3 = feedCT (liftCT id) >>>* firstCT pp1 >>>* pp2
+pp3 = feedCT (liftCT id) >>> firstCT pp1 >>> pp2
 
 tt = linspace 0 10 100
 ss = fst $ execCT (intCT rk4' 0 0 pp3) tt
