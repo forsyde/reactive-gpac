@@ -45,6 +45,10 @@ signalCT (PCT {prCT = p1}) = \t a -> fst $ p1 t a
 liftCT :: (a -> b) -> PCT a b
 liftCT f = PCT {prCT = \_ a -> (f a, liftCT f)}
 
+mergeCT :: (a -> b -> c) -> PCT (a,b) c
+mergeCT f = liftCT $ uncurry f
+
+
 -- | Composition operators.
 cascadeCT :: PCT a b
           -> PCT b c
