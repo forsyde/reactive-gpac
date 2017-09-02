@@ -38,7 +38,7 @@ adderCT = mergeCT (+)
 --        (c, p1') = p1 t a
 multCT :: (Num a) => PCT (a, a) a
 --multCT = liftCT (uncurry (*))
-multCT = mergeCT (+)
+multCT = mergeCT (*)
 
 -- | Integrator
 -- | Embedded the trapezoidal rule. Need to find a way to generalize
