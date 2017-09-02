@@ -26,8 +26,8 @@ nullCT = PCT (\t _ -> ((), nullCT))
 --      where
 --        (c, p1') = p1 t a
 adderCT :: (Num a) => PCT (a,a) a
-adderCT = liftCT (uncurry (+))
-
+--adderCT = liftCT (uncurry (+))
+adderCT = mergeCT (+)
 
 -- | Multiplier
 --multCT :: (Num b) => PCT a (b, b) -> PCT a b
@@ -37,8 +37,8 @@ adderCT = liftCT (uncurry (+))
 --      where
 --        (c, p1') = p1 t a
 multCT :: (Num a) => PCT (a, a) a
-multCT = liftCT (uncurry (*))
-
+--multCT = liftCT (uncurry (*))
+multCT = mergeCT (+)
 
 -- | Integrator
 -- | Embedded the trapezoidal rule. Need to find a way to generalize
