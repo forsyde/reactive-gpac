@@ -57,21 +57,16 @@ cascadeCT (PCT {prCT = p1}) (PCT {prCT = p2}) =
         (b, p1') = p1 t a
         (c, p2') = p2 t b
 
-(>>>*) :: PCT a b
-       -> PCT b c
-       -> PCT a c
-(>>>*) = cascadeCT
-
 (>>>) :: PCT a b
       -> PCT b c
       -> PCT a c
 (>>>) = cascadeCT
 
 
-(<<<*) :: PCT b c
+(<<<) :: PCT b c
        -> PCT a b
        -> PCT a c
-p1 <<<* p2 = cascadeCT p2 p1
+p1 <<< p2 = cascadeCT p2 p1
 
 -- | Parallel composition: splitCT p1 id
 firstCT :: PCT a b
@@ -102,14 +97,22 @@ splitCT p1 p2 = PCT {prCT = p}
         (b, p1') = prCT p1 t a
         (d, p2') = prCT p2 t c
 
+(***) :: PCT a b
+      -> PCT c d
+      -> PCT (a,c) (b,d)
+(***) = splitCT
+
 -- | Split single input into two
 feedCT :: PCT a b
        -> PCT a (b,b)
-feedCT p1 = PCT {prCT = p}
-  where
-    p t a = ((b,b), feedCT p1')
-      where
-        (b, p1') = prCT p1 t a
+--feedCT p1 = PCT {prCT = p}
+--  where
+--    p t a = ((b,b), feedCT p1')
+--      where
+--        (b, p1') = prCT p1 t a
+feedCT p1 = p1 >>> (idCT &&& idCT)
+  where idCT = liftCT id
+
 
 -- | Feeds single input to two processes
 fanoutCT :: PCT a b
@@ -121,6 +124,11 @@ fanoutCT p1 p2 = PCT {prCT = p}
       where
         (b, p1') = prCT p1 t a
         (c, p2') = prCT p2 t a
+
+(&&&) :: PCT a b
+      -> PCT a c
+      -> PCT a (b,c)
+(&&&) = fanoutCT
 
 -- | Feedback operator
 feedbackCT :: PCT (a,c) (b,c)
