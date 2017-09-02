@@ -91,10 +91,10 @@ secondCT p1 = PCT {prCT = p}
         (b, p') = prCT p1 t a
 
 -- | Parallel composition
-splitCT :: PCT a b
+parallelCT :: PCT a b
         -> PCT c d
         -> PCT (a,c) (b,d)
-splitCT p1 p2 = PCT {prCT = p}
+parallelCT p1 p2 = PCT {prCT = p}
   where
     p t (a,c) = ((b,d), splitCT p1' p2')
       where
@@ -104,7 +104,7 @@ splitCT p1 p2 = PCT {prCT = p}
 (***) :: PCT a b
       -> PCT c d
       -> PCT (a,c) (b,d)
-(***) = splitCT
+(***) = parallelCT
 
 -- | Split single input into two
 feedCT :: PCT a b
