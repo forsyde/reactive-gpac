@@ -53,13 +53,12 @@ mergeCT f = liftCT $ uncurry f
 cascadeCT :: PCT a b
           -> PCT b c
           -> PCT a c
-cascadeCT (PCT {prCT = p1}) (PCT {prCT = p2}) =
-  PCT {prCT = p}
+cascadeCT p1 p2 = PCT {prCT = p}
   where
     p t a = (c, p1' `cascadeCT` p2')
       where
-        (b, p1') = p1 t a
-        (c, p2') = p2 t b
+        (b, p1') = prCT p1 t a
+        (c, p2') = prCT p2 t b
 
 (>>>) :: PCT a b
       -> PCT b c
