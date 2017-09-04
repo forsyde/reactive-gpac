@@ -95,7 +95,7 @@ parallelCT :: PCT a b
         -> PCT (a,c) (b,d)
 parallelCT p1 p2 = PCT {prCT = p}
   where
-    p t (a,c) = ((b,d), splitCT p1' p2')
+    p t (a,c) = ((b,d), parallelCT p1' p2')
       where
         (b, p1') = prCT p1 t a
         (d, p2') = prCT p2 t c
