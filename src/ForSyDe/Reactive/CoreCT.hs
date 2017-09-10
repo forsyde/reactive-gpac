@@ -40,6 +40,10 @@ multCT :: (Num a) => PCT (a, a) a
 --multCT = liftCT (uncurry (*))
 multCT = mergeCT (*)
 
+-- | Identity process.
+idCT :: PCT a a
+idCT = liftCT id
+
 -- | Integrator
 -- | Embedded the trapezoidal rule. Need to find a way to generalize
 -- the solver later...
