@@ -1,23 +1,21 @@
-module DemoCT5 where
+module DemoCT5b where
 
 import ForSyDe.Reactive
 
 -- | Sigma delta modulator
 
 -- | System input
-sineSource = liftCT (\t -> 0.1*(sin t))
+sineSource = (intCT rk4 0 0 p1 &&& constCT (0.1)) >>> multCT
+  where p1 = (constCT (-1) *** idCT) >>> multCT >>> openLoopInt
+        openLoopInt = intCT rk4 0 1 p2
+        p2 = (idCT *** constCT 0) >>> adderCT
+
 
 -- | Comparator and inverter
-compInv = liftCT f
-  where f x
-          | x < 0 = 1
-          | otherwise = -1
+compInv = switchCT (\x -> x < 0) (constCT 1) (constCT (-1))
 
 -- | Comparator
-comp = liftCT f
-  where f x
-          | x < 0 = -1
-          |otherwise = 1
+comp = switchCT (\x -> x < 0) (constCT (-1)) (constCT 1)
 
 -- | GPAC "polynomial" circuit. Feedback will be achieved over the
 -- compInv process input.

@@ -44,6 +44,19 @@ multCT = mergeCT (*)
 idCT :: PCT a a
 idCT = liftCT id
 
+-- | Switch between two processes with stateless predicate
+switchCT :: (a -> Bool)
+       -> PCT a b
+       -> PCT a b
+       -> PCT a b
+switchCT predicate p1 p2 = PCT p
+  where
+    p t a
+      | predicate a == True = (fst $ prCT p1 t a, switchCT predicate (snd $ prCT p1 t a) p2)
+      | otherwise           = (fst $ prCT p2 t a, switchCT predicate p1 (snd $ prCT p2 t a))
+
+
+
 -- | Integrator
 -- | Embedded the trapezoidal rule. Need to find a way to generalize
 -- the solver later...
