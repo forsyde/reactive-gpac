@@ -76,13 +76,6 @@ intCT solver t0 y0 p1 = PCT {prCT = p}
 
 -- | Solvers collection.
 
--- | Trapezoidal rule
-trapezoidal t0 y0 p1 t a = (b, p1'')
-  where
-    b = y0 + (t - t0)/2 * (fa + fb)
-    (fa, p1') = prCT p1 t0 a
-    (fb, p1'') = prCT p1' t a
-
 -- | Runge-Kutta 4th order: reduces to Simpson's rule.
 rk4 t0 y0 p1 t a = (b, lastP)
   where
@@ -93,7 +86,7 @@ rk4 t0 y0 p1 t a = (b, lastP)
     (k4, lastP) = prCT p1_3 (t0 + h) (a, y0 + h*k3)
     b = y0 + h/6*(k1 + 2*k2 + 2*k3 + k4)
 
--- | Trying to improve RK4 method, but yileds the same results as the
+-- | Trying to improve RK4 method, but yields the same results as the
 -- one above.
 rk4teste t0 y0 p1 t a = (b, lastP)
   where
@@ -108,8 +101,7 @@ rk4teste t0 y0 p1 t a = (b, lastP)
     b = y0 + h/6*(k1 + 2*k2 + 2*k3 + k4)
     (_,lastP) = prCT p13 t (a, y0 + h*k3)
 
-
-
+-- | Single input. Not intended to be used.
 rk4' t0 y0 p1 t a = (b, lastP)
   where
     h = t - t0
@@ -118,3 +110,17 @@ rk4' t0 y0 p1 t a = (b, lastP)
     (k3, p1_3) = prCT p1_2 (t0 + h/2) (y0 + h/2*k2)
     (k4, lastP) = prCT p1_3 (t0 + h) (y0 + h*k3)
     b = y0 + h/6*(k1 + 2*k2 + 2*k3 + k4)
+
+-- | Trapezoidal method.
+trap t0 y0 p1 t a = (b, p1'')
+  where
+    b = y0 + (t - t0)/2 * (fa + fb)
+    (fa, p1') = prCT p1 t0 (a, y0)
+    (fb, p1'') = prCT p1' t (a, y0)
+
+-- | Trapezoidal rule, single input. Not intended to be used.
+trapezoidal t0 y0 p1 t a = (b, p1'')
+  where
+    b = y0 + (t - t0)/2 * (fa + fb)
+    (fa, p1') = prCT p1 t0 a
+    (fb, p1'') = prCT p1' t a

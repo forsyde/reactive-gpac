@@ -31,7 +31,7 @@ s3' = time >>> tScale 2
   where tScale k = (idCT &&& constCT k) >>> multCT
 
 -- | Observation points
-tt = linspace 0 (2*pi) 1000
+tt = linspace 0 (10*2*pi) 1000
 
 -- | Execute processes
 ss1 = fst $ execCT s1 tt
