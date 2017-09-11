@@ -93,6 +93,21 @@ rk4 t0 y0 p1 t a = (b, lastP)
     (k4, lastP) = prCT p1_3 (t0 + h) (a, y0 + h*k3)
     b = y0 + h/6*(k1 + 2*k2 + 2*k3 + k4)
 
+-- | Trying to improve RK4 method, but yileds the same results as the
+-- one above.
+rk4teste t0 y0 p1 t a = (b, lastP)
+  where
+    h = t - t0
+    k1 = (time >>> (constCT a &&& constCT y0) >>>  p1) `at` t0
+    (_,p11) = prCT p1 (t0) (a, y0)
+    k2 = (time >>> (constCT a &&& constCT (y0 + h/2*k1)) >>>  p11) `at` (t0 + h/2)
+    (_,p12) = prCT p11 (t0 + h/2) (a, y0 + h/2*k1)
+    k3 = (time >>> (constCT a &&& constCT (y0 + h/2*k2)) >>>  p12) `at` (t0 + h/2)
+    (_,p13) = prCT p12 (t0 + h/2) (a, y0 + h/2*k2)
+    k4 = (time >>> (constCT a &&& constCT (y0 + h*k3)) >>>  p13) `at` (t0 + h)
+    b = y0 + h/6*(k1 + 2*k2 + 2*k3 + k4)
+    (_,lastP) = prCT p13 t (a, y0 + h*k3)
+
 
 
 rk4' t0 y0 p1 t a = (b, lastP)
