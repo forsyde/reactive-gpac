@@ -27,7 +27,7 @@ modulator = intCT rk4 0 0 polyCirc
 -- | Simulation setup
 
 -- | Sampling points
-tt = linspace 0 (2*2*pi) 2048
+tt = linspace 0 (2*pi) 512
 
 -- | Observing the system
 ss = fst $ execCT (time >>> modulator >>> comp) tt
